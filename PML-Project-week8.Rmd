@@ -1,0 +1,147 @@
+---
+title: "Practical Machine Learning "
+author: "Wellintton Perez"
+date: "September 2019"
+output:
+  html_document: default
+---
+
+## BACKGROUND
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+
+## DATA PROCESSING
+The data for this project come from this source: http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har. 
+The data processing I conducted consists of eliminating predictors with very low variance as well as removing columns with more than 65% NA.  
+
+```{r echo=FALSE,results="hide",cache=F,message=FALSE}
+library(ggplot2)
+library(caret)
+library(rpart)
+library(rpart.plot)
+library(RColorBrewer)
+library(rattle)
+library(randomForest)
+library(knitr)
+library(data.table)
+library(corrplot)
+warn.conflicts = FALSE
+```
+
+### DATA LOADING AND CLEANING
+The code below describes step-by-step how I loaded the data, split the training set into two sets training=0.70, testing=0.30.  
+```{r echo=TRUE, cache=TRUE, results="show",message=FALSE}
+train_file<-"https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+test_file<-"https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+training<-read.csv(train_file ,sep=",",nrows=-1,na.strings=c("NA","#DIV/0!",""))
+testing<-read.csv(test_file ,sep=",",nrows=-1,na.strings=c("NA","#DIV/0!",""))
+
+train_part<-createDataPartition(training$classe,p=0.70,list=F)
+train_ds<-training[train_part,]
+test_ds<-training[-train_part,]
+
+dim(train_ds)
+dim(test_ds)
+```
+
+In this of code snippet I remove columns with near zero variance using the function nearZeroVar() from the caret package.  I also remove the first column from the training an testing datasets.
+
+```{r echo=TRUE, results="show",message=FALSE}
+nzv=nearZeroVar(train_ds,saveMetrics = T)
+train_ds<-train_ds[,nzv$nzv==FALSE]
+ 
+nz=nearZeroVar(test_ds,saveMetrics = T)
+test_ds<-test_ds[,nz$nzv==FALSE]
+
+train_ds<-train_ds[,-1] #remove fist column
+test_ds<-test_ds[,-1] #remove fist column
+
+testing<-testing[,-1] 
+```
+
+Following is removing NA from the training dataset for any covariate that has more than 65% NA.  This will help me run the model functions without using the default method to remove NA which I think this gives me more control and better prediction.
+
+```{r echo=TRUE, results="show",message=FALSE}
+remove_cols<-c()
+for(i in 1:length(train_ds)){
+  if((sum(is.na(train_ds[,i])) / nrow(train_ds)) > .65){
+    remove_cols<-c(remove_cols,i)
+  }
+}
+train_ds<-train_ds[,-c(remove_cols)]
+
+remove_cols<-c()
+for(i in 1:length(test_ds)){
+  if((sum(is.na(test_ds[,i])) / nrow(test_ds)) > .65){
+    remove_cols<-c(remove_cols,i)
+  }
+}
+test_ds<-test_ds[,-c(remove_cols)]
+```
+
+In this section I am cleaning the data sets to contain the clean columns.
+
+```{r echo=TRUE, results="show",message=FALSE}
+clean_test_ds<-colnames(train_ds)
+clean_test<-colnames(train_ds[,-58])
+
+test_ds<-test_ds[clean_test_ds]
+testing<-testing[clean_test]
+
+
+# To get the same class between testing and train_ds
+testing <- rbind(train_ds[2, -58] , testing)
+testing <- testing[-1,]
+```
+
+### Investigating correlated predictors
+
+```{r echo=TRUE, results="show",message=FALSE}
+corrtable = cor(train_ds[, c(-1,-4,-58)]) # remove the non-numeric columns
+summary(corrtable[upper.tri(corrtable)]) 
+```
+This shows the correlation between the predictors
+```{r echo=TRUE, results="show",message=FALSE}
+corrplot(corrtable, order="FPC", method="color", type = "upper")
+```
+
+The following density plot shows that classe A should be the prevalent prediction from this data set.
+```{r echo=TRUE, results="show",message=FALSE}
+qplot(classe, colour=classe, data=train_ds[, c(-1,-4)],geom="density")
+```
+
+## Prediction with decision trees
+I am going to start by analyzing the data set using decision trees.
+```{r echo=TRUE, results="show",message=FALSE}
+set.seed(423423)
+fit1 <- rpart(classe ~ ., data=train_ds, method="class")
+fancyRpartPlot(fit1)
+```
+
+The decision trees prediction has an accuracy of about 88%.  This is a very good prediction rate and we also have a very low P-value.  But the table below shows misses on all predictors.
+
+```{r echo=TRUE, results="show",message=FALSE}
+predict1 <- predict(fit1, test_ds, type = "class")
+cmtree <- confusionMatrix(predict1, test_ds$classe)
+cmtree
+```
+
+## Prediction with random forest
+The next method I will be using is random forest.  Random forest uses bagging internally to come up with the best prediction.  
+```{r echo=TRUE, results="show",message=FALSE}
+set.seed(423423)
+rfMod1 <- randomForest(classe ~ ., data=train_ds)
+rfPredict1 <- predict(rfMod1, test_ds, type = "class")
+cmrf <- confusionMatrix(rfPredict1, test_ds$classe)
+cmrf
+```
+
+## Predicting results
+Random Forest has a 99.9% accuracy on the testing data partition of the data set.  The result is more than 10% better than using decision trees therefore I will use random forest for my final prediction model.
+```{r echo=TRUE, results="show",message=FALSE}
+rfPredict2 <- predict(rfMod1, testing, type = "class")
+rfPredict2
+```
+
+Write the results to a file for submission.
+```{r echo=TRUE, results="show",message=FALSE}
+```
