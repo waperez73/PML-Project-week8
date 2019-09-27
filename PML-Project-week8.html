@@ -252,7 +252,7 @@ testing &lt;- testing[-1,]</code></pre>
 <pre class="r"><code>corrtable = cor(train_ds[, c(-1,-4,-58)]) # remove the non-numeric columns
 summary(corrtable[upper.tri(corrtable)]) </code></pre>
 <pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-## -0.991978 -0.102458  0.001035  0.001195  0.085174  0.980789</code></pre>
+## -0.992001 -0.109104  0.002139  0.001467  0.098396  0.980897</code></pre>
 <p>This shows the correlation between the predictors</p>
 <p>The following density plot shows that classe A should be the prevalent prediction from this data set.</p>
 </div>
@@ -268,34 +268,34 @@ cmtree</code></pre>
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 1621   47    5    3    0
-##          B   35  946   63   51    0
-##          C   18  142  938  157   40
-##          D    0    4   11  603   62
-##          E    0    0    9  150  980
+##          A 1607  178    6    3    0
+##          B   50  843   70   41    0
+##          C   17  110  933  137   39
+##          D    0    8   17  731  143
+##          E    0    0    0   52  900
 ## 
 ## Overall Statistics
-##                                           
-##                Accuracy : 0.8646          
-##                  95% CI : (0.8556, 0.8732)
-##     No Information Rate : 0.2845          
-##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
-##                                           
-##                   Kappa : 0.8286          
-##                                           
-##  Mcnemar's Test P-Value : NA              
+##                                          
+##                Accuracy : 0.852          
+##                  95% CI : (0.8427, 0.861)
+##     No Information Rate : 0.2845         
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16      
+##                                          
+##                   Kappa : 0.8124         
+##                                          
+##  Mcnemar's Test P-Value : NA             
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.9683   0.8306   0.9142   0.6255   0.9057
-## Specificity            0.9869   0.9686   0.9265   0.9844   0.9669
-## Pos Pred Value         0.9672   0.8639   0.7243   0.8868   0.8604
-## Neg Pred Value         0.9874   0.9597   0.9808   0.9306   0.9785
+## Sensitivity            0.9600   0.7401   0.9094   0.7583   0.8318
+## Specificity            0.9556   0.9661   0.9376   0.9659   0.9892
+## Pos Pred Value         0.8958   0.8396   0.7549   0.8131   0.9454
+## Neg Pred Value         0.9836   0.9394   0.9800   0.9533   0.9631
 ## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
-## Detection Rate         0.2754   0.1607   0.1594   0.1025   0.1665
-## Detection Prevalence   0.2848   0.1861   0.2201   0.1155   0.1935
-## Balanced Accuracy      0.9776   0.8996   0.9204   0.8049   0.9363</code></pre>
+## Detection Rate         0.2731   0.1432   0.1585   0.1242   0.1529
+## Detection Prevalence   0.3048   0.1706   0.2100   0.1528   0.1618
+## Balanced Accuracy      0.9578   0.8531   0.9235   0.8621   0.9105</code></pre>
 </div>
 <div id="prediction-with-random-forest" class="section level2">
 <h2>Prediction with random forest</h2>
@@ -309,41 +309,41 @@ cmrf</code></pre>
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 1674    0    0    0    0
-##          B    0 1139    1    0    0
-##          C    0    0 1024    2    0
-##          D    0    0    1  962    0
+##          A 1673    1    0    0    0
+##          B    1 1138    3    0    0
+##          C    0    0 1023    0    0
+##          D    0    0    0  964    0
 ##          E    0    0    0    0 1082
 ## 
 ## Overall Statistics
-##                                           
-##                Accuracy : 0.9993          
-##                  95% CI : (0.9983, 0.9998)
-##     No Information Rate : 0.2845          
-##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
-##                                           
-##                   Kappa : 0.9991          
-##                                           
-##  Mcnemar's Test P-Value : NA              
+##                                          
+##                Accuracy : 0.9992         
+##                  95% CI : (0.998, 0.9997)
+##     No Information Rate : 0.2845         
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16      
+##                                          
+##                   Kappa : 0.9989         
+##                                          
+##  Mcnemar's Test P-Value : NA             
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            1.0000   1.0000   0.9981   0.9979   1.0000
-## Specificity            1.0000   0.9998   0.9996   0.9998   1.0000
-## Pos Pred Value         1.0000   0.9991   0.9981   0.9990   1.0000
-## Neg Pred Value         1.0000   1.0000   0.9996   0.9996   1.0000
+## Sensitivity            0.9994   0.9991   0.9971   1.0000   1.0000
+## Specificity            0.9998   0.9992   1.0000   1.0000   1.0000
+## Pos Pred Value         0.9994   0.9965   1.0000   1.0000   1.0000
+## Neg Pred Value         0.9998   0.9998   0.9994   1.0000   1.0000
 ## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
-## Detection Rate         0.2845   0.1935   0.1740   0.1635   0.1839
-## Detection Prevalence   0.2845   0.1937   0.1743   0.1636   0.1839
-## Balanced Accuracy      1.0000   0.9999   0.9988   0.9989   1.0000</code></pre>
+## Detection Rate         0.2843   0.1934   0.1738   0.1638   0.1839
+## Detection Prevalence   0.2845   0.1941   0.1738   0.1638   0.1839
+## Balanced Accuracy      0.9996   0.9991   0.9985   1.0000   1.0000</code></pre>
 </div>
 <div id="predicting-results" class="section level2">
 <h2>Predicting results</h2>
 <p>Random Forest has a 99.9% accuracy on the testing data partition of the data set. The result is more than 10% better than using decision trees therefore I will use random forest for my final prediction model.</p>
 <pre class="r"><code>rfPredict2 &lt;- predict(rfMod1, testing, type = &quot;class&quot;)
 rfPredict2</code></pre>
-<pre><code>##  1 21  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
+<pre><code>##  1  2  3 41  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
 ##  B  A  B  A  A  E  D  B  A  A  B  C  B  A  E  E  A  B  B  B 
 ## Levels: A B C D E</code></pre>
 <p>Write the results to a file for submission.</p>
