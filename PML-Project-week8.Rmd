@@ -100,22 +100,31 @@ corrtable = cor(train_ds[, c(-1,-4,-58)]) # remove the non-numeric columns
 summary(corrtable[upper.tri(corrtable)]) 
 ```
 This shows the correlation between the predictors
-```{r echo=TRUE, results="show",message=FALSE,fig.height=6,fig.width=12}
+```{r echo=TRUE, results="show",message=FALSE,fig.height=6,fig.width=12,include=FALSE}
+png(filename="images/plot1.png")
 corrplot(corrtable, order="FPC", method="color", type = "upper")
+dev.off()
 ```
+![correlation between the predictors](images/plot1.png)
 
 The following density plot shows that classe A should be the prevalent prediction from this data set.
-```{r echo=F, results="show",message=FALSE, fig.height=4,fig.width=8}
+```{r echo=F, results="show",message=FALSE, fig.height=4,fig.width=8,include=FALSE}
+png(filename="images/plot2.png")
 qplot(classe, colour=classe, data=train_ds[, c(-1,-4)],geom="density")
+dev.off()
 ```
+![Density plot](images/plot2.png)
 
 ## Prediction with decision trees
 I am going to start by analyzing the data set using decision trees.
-```{r echo=TRUE, results="show",message=FALSE,fig.height=6,fig.width=8}
+```{r echo=F, results="show",message=FALSE,fig.height=6,fig.width=8,include=FALSE}
 set.seed(423423)
 fit1 <- rpart(classe ~ ., data=train_ds, method="class")
+png(filename="images/plot3.png")
 fancyRpartPlot(fit1)
+dev.off()
 ```
+![Descision tree](images/plot3.png)
 
 The decision trees prediction has an accuracy of about 88%.  This is a very good prediction rate and we also have a very low P-value.  But the table below shows misses on all predictors.
 
