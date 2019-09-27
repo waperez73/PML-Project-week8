@@ -105,7 +105,7 @@ corrplot(corrtable, order="FPC", method="color", type = "upper")
 ```
 
 The following density plot shows that classe A should be the prevalent prediction from this data set.
-```{r echo=TRUE, results="show",message=FALSE, fig.height=4,fig.width=8}
+```{r echo=F, results="show",message=FALSE, fig.height=4,fig.width=8}
 qplot(classe, colour=classe, data=train_ds[, c(-1,-4)],geom="density")
 ```
 
