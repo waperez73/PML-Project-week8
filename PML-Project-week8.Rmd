@@ -100,18 +100,18 @@ corrtable = cor(train_ds[, c(-1,-4,-58)]) # remove the non-numeric columns
 summary(corrtable[upper.tri(corrtable)]) 
 ```
 This shows the correlation between the predictors
-```{r echo=TRUE, results="show",message=FALSE,fig.height=6,fig.width=12, include=F}
+```{r echo=TRUE, results="show",message=FALSE,fig.height=6,fig.width=12}
 corrplot(corrtable, order="FPC", method="color", type = "upper")
 ```
 
 The following density plot shows that classe A should be the prevalent prediction from this data set.
-```{r echo=TRUE, results="show",message=FALSE, fig.height=4,fig.width=8,include=F}
+```{r echo=TRUE, results="show",message=FALSE, fig.height=4,fig.width=8}
 qplot(classe, colour=classe, data=train_ds[, c(-1,-4)],geom="density")
 ```
 
 ## Prediction with decision trees
 I am going to start by analyzing the data set using decision trees.
-```{r echo=TRUE, results="show",message=FALSE,fig.height=6,fig.width=8, include=F}
+```{r echo=TRUE, results="show",message=FALSE,fig.height=6,fig.width=8}
 set.seed(423423)
 fit1 <- rpart(classe ~ ., data=train_ds, method="class")
 fancyRpartPlot(fit1)
